@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Image, Excel, and Coordinates</title>
+</head>
+<body>
+    <h1>Upload Image, Excel, and Coordinates</h1>
+    <form id="uploadForm" action="http://127.0.0.1:5000/api" method="post" enctype="multipart/form-data">
+        <label for="image">Select Image:</label>
+        <input type="file" id="image" name="image" accept="image/*" required><br><br>
+        
+        <label for="excel">Select Excel File:</label>
+        <input type="file" id="excel" name="excel" accept=".xls,.xlsx" required><br><br>
+        
+        <label for="coordinates">Enter Coordinates (JSON):</label><br>
+        <textarea id="coordinates" name="coordinates" rows="4" cols="50" required></textarea><br><br>
+        
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
