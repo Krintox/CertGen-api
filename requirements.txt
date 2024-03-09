@@ -2,3 +2,4 @@ numpy
 pandas
 Pillow
 Flask
+Flask-Cors
