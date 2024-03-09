@@ -71,5 +71,9 @@ def api():
         # Log and handle errors
         return jsonify({"message": f"Error: {str(e)}"}), 500
 
+@app.route('/')
+def index():
+    return "Hello, World!"
+
 if __name__ == "__main__":
     app.run(debug=False)
