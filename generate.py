@@ -1,6 +1,18 @@
 from PIL import ImageDraw, ImageFont
 import math
 
+def preprocess_dataframe(data):
+    """
+    Preprocesses the DataFrame to create a dictionary mapping column names to their corresponding indices.
+
+    Args:
+        data (pd.DataFrame): DataFrame containing the data to be written onto the images.
+
+    Returns:
+        dict: A dictionary mapping column names to their corresponding indices.
+    """
+    return {column.lower(): index for index, column in enumerate(data.columns)}
+
 def generate_image(image, required_predictions, data, email_column_name="email"):
     """
     Writes details onto a certificate image for each row in the DataFrame.
@@ -16,27 +28,26 @@ def generate_image(image, required_predictions, data, email_column_name="email")
             - list of PIL.Image: List of modified certificate images for each row.
             - list of str: List of email addresses extracted from the DataFrame.
     """
-
     all_row_images = []
     email_list = []
-    data_columns = data.columns.tolist()
-    columns = [word.lower() for word in data_columns]
-    print(columns)
+    column_indices = preprocess_dataframe(data)
+
+    # Preload font outside the loop if it's the same font for all text labels
+    text_font = ImageFont.truetype('Montesart.ttf', size=required_predictions[0][5])
 
     for index, row in data.iterrows():
         row_data = {}
-        # Extract data corresponding to required text labels (case-insensitive)
-        for text, _, _, _, _, _ in required_predictions:
-            if text.lower() in columns:
-                column_name = text.lower() if text.lower() in row.index else text.capitalize()
-                row_data[text.lower()] = str(row[column_name])
         
-        print(required_predictions)
+        # Extract data corresponding to required text labels using preprocessed column indices
+        for text, _, _, _, _, _ in required_predictions:
+            if text.lower() in column_indices:
+                row_data[text.lower()] = str(row.iloc[column_indices[text.lower()]])
+        
         # Create a copy of the base image for each row
         certificate_image = image.copy()
         draw = ImageDraw.Draw(certificate_image)
 
-        # Extract email address (if available)
+        # Extract email address (if available) outside the loop
         email = row.get(email_column_name, "")
         email_list.append(email)
 
@@ -52,9 +63,6 @@ def generate_image(image, required_predictions, data, email_column_name="email")
                 height = math.floor(height)
                 font_size = math.floor(font_size)
 
-                # Load and adjust font size
-                text_font = ImageFont.truetype('Montesart.ttf', size=font_size)
-
                 text_bbox = draw.textbbox([0, 0, 0, 0], text=data_value, font=text_font)
                 text_width, text_height = text_bbox[2] - text_bbox[0], text_bbox[3] - text_bbox[1]
 
@@ -66,7 +74,7 @@ def generate_image(image, required_predictions, data, email_column_name="email")
                 draw.text((text_x, text_y), data_value, fill='black', font=text_font)
 
         # Append the modified image to the list
+        certificate_image.show()
         all_row_images.append(certificate_image)
 
-    print("Successfully generated images.")
     return all_row_images, email_list

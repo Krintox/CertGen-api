@@ -19,6 +19,5 @@ def read_excel(file_path):
     data = pd.DataFrame(excel_data)
     data = data.rename(columns=str.lower)
 
-    print("Successfully read Excel file.")
     return data, columns
 

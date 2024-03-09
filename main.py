@@ -12,9 +12,6 @@ CORS(app)
 
 def infer(image, coordinates, excel_file):
     try:
-        # Placeholder processing
-        print("Received image coordinates:", coordinates)
-        print("Received Excel file:", excel_file.filename)
         
         # Read the Excel file into a pandas DataFrame
         df, columns = read_excel(excel_file)
@@ -30,21 +27,16 @@ def infer(image, coordinates, excel_file):
             fontsize = coordinate_dict['fontSize']
             coordinate_list.append((name, left, top, width, height, fontsize))
 
-        print(coordinate_list)
-
         # Call generate_image function with image, coordinates, and data
         result_images, result_emails = generate_image(image, coordinate_list, df)
         
         return result_images, result_emails
     except Exception as e:
         # Log and handle errors
-        print("An error occurred:", e)
         return None, None
 
 @app.route('/api', methods=['POST'])
 def api():
-    print("Received POST request")
-    print(request.form)
     if 'image' not in request.files or 'excel' not in request.files:
         return jsonify({"message": "Missing image or Excel file"}), 400
     
@@ -76,4 +68,4 @@ def index():
     return "Hello, World!"
 
 if __name__ == "__main__":
-    app.run(debug=False)
+    app.run(debug=True)
