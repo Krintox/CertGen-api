@@ -4,3 +4,4 @@ Pillow
 Flask
 Flask-Cors
 waitress
+uvicorn
