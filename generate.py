@@ -74,7 +74,6 @@ def generate_image(image, required_predictions, data, email_column_name="email")
                 draw.text((text_x, text_y), data_value, fill='black', font=text_font)
 
         # Append the modified image to the list
-        certificate_image.show()
         all_row_images.append(certificate_image)
 
     return all_row_images, email_list
