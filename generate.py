@@ -32,9 +32,6 @@ def generate_image(image, required_predictions, data, email_column_name="email")
     email_list = []
     column_indices = preprocess_dataframe(data)
 
-    # Preload font outside the loop if it's the same font for all text labels
-    text_font = ImageFont.truetype('Montesart.ttf', size=required_predictions[0][5])
-
     for index, row in data.iterrows():
         row_data = {}
         
@@ -63,8 +60,18 @@ def generate_image(image, required_predictions, data, email_column_name="email")
                 height = math.floor(height)
                 font_size = math.floor(font_size)
 
-                text_bbox = draw.textbbox([0, 0, 0, 0], text=data_value, font=text_font)
-                text_width, text_height = text_bbox[2] - text_bbox[0], text_bbox[3] - text_bbox[1]
+                # Calculate maximum font size that fits within the bounding box
+                max_font_size = int(min(width, height) * 0.6)  # Adjust this factor as needed
+
+                # Load font with dynamically calculated font size
+                text_font = ImageFont.truetype('Montesart.ttf', size=max_font_size)
+
+                # Keep reducing font size until the text fits within the bounding box
+                text_width, text_height = draw.textbbox((0, 0), data_value, font=text_font)[2:]
+                while text_width > width or text_height > height:
+                    max_font_size -= 0.5
+                    text_font = ImageFont.truetype('Montesart.ttf', size=max_font_size)
+                    text_width, text_height = draw.textbbox((0, 0), data_value, font=text_font)[2:]
 
                 # Calculate text position for centered placement
                 text_x = left + (width - text_width) / 2
