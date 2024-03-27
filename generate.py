@@ -13,6 +13,19 @@ def preprocess_dataframe(data):
     """
     return {column.lower(): index for index, column in enumerate(data.columns)}
 
+def round_to_nearest_common_font_size(font_size):
+    """
+    Rounds the font size to the nearest common point size.
+
+    Args:
+        font_size (float): The font size to be rounded.
+
+    Returns:
+        int: The rounded font size.
+    """
+    common_font_sizes = [8, 9, 10, 11, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 48, 56, 64]
+    return min(common_font_sizes, key=lambda x: abs(x - font_size))
+
 def generate_image(image, required_predictions, data, email_column_name="email"):
     """
     Writes details onto a certificate image for each row in the DataFrame.
@@ -53,23 +66,23 @@ def generate_image(image, required_predictions, data, email_column_name="email")
             if text.lower() in row_data:
                 data_value = row_data[text.lower()]
                 
-                #Round off values to lowest integer
+                # Round off values to lowest integer
                 left = math.floor(left)
                 top = math.floor(top)
                 width = math.floor(width)
                 height = math.floor(height)
-                font_size = math.floor(font_size)
+                font_size = round_to_nearest_common_font_size(font_size)
+
+                # Load font with dynamically calculated font size
+                text_font = ImageFont.truetype('Montesart.ttf', size=font_size)
 
                 # Calculate maximum font size that fits within the bounding box
                 max_font_size = int(min(width, height) * 0.6)  # Adjust this factor as needed
 
-                # Load font with dynamically calculated font size
-                text_font = ImageFont.truetype('Montesart.ttf', size=max_font_size)
-
                 # Keep reducing font size until the text fits within the bounding box
                 text_width, text_height = draw.textbbox((0, 0), data_value, font=text_font)[2:]
                 while text_width > width or text_height > height:
-                    max_font_size -= 0.5
+                    max_font_size -= 1
                     text_font = ImageFont.truetype('Montesart.ttf', size=max_font_size)
                     text_width, text_height = draw.textbbox((0, 0), data_value, font=text_font)[2:]
 
