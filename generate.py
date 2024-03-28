@@ -82,7 +82,7 @@ def generate_image(image, required_predictions, data, email_column_name="email")
                 # Keep reducing font size until the text fits within the bounding box
                 text_width, text_height = draw.textbbox((0, 0), data_value, font=text_font)[2:]
                 while text_width > width or text_height > height:
-                    max_font_size -= 1
+                    max_font_size -= 2
                     text_font = ImageFont.truetype('Montesart.ttf', size=max_font_size)
                     text_width, text_height = draw.textbbox((0, 0), data_value, font=text_font)[2:]
 
