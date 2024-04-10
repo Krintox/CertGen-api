@@ -1,5 +1,6 @@
 from PIL import ImageDraw, ImageFont
 import math
+import numpy as np
 
 def preprocess_dataframe(data):
     """
@@ -59,7 +60,10 @@ def generate_image(image, required_predictions, data, email_column_name="email")
 
         # Extract email address (if available) outside the loop
         email = row.get(email_column_name, "")
-        email_list.append(email)
+        if isinstance(email, str) and email.strip():
+            email_list.append(email)
+        else:
+            email_list.append('')  # Append empty string if email is not available or not a valid string
 
         # Write data onto the image at specified locations
         for text, left, top, width, height, font_size in required_predictions:
