@@ -81,14 +81,14 @@ def generate_image(image, required_predictions, data, email_column_name="email")
                 text_font = ImageFont.truetype('George-SemiBold.ttf', size=font_size)
 
                 # Calculate maximum font size that fits within the bounding box
-                max_font_size = int(min(width, height) * 0.8)  # Adjust this factor as needed
+                max_font_size = int(min(width, height) * 1)  # Adjust this factor as needed
 
                 # Calculate text dimensions for the maximum font size
                 text_width, text_height = draw.textbbox((0, 0), data_value, font=text_font)[2:]
 
                 # Reduce font size if the text doesn't fit within the bounding box
                 while text_width > width or text_height > height:
-                    max_font_size -= 1
+                    max_font_size -= 0.5
                     text_font = ImageFont.truetype('George-SemiBold.ttf', size=max_font_size)
                     text_width, text_height = draw.textbbox((0, 0), data_value, font=text_font)[2:]
 
