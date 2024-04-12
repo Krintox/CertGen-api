@@ -83,20 +83,12 @@ def generate_image(image, required_predictions, data, email_column_name="email")
                 # Calculate maximum font size that fits within the bounding box
                 max_font_size = int(min(width, height) * 1)  # Adjust this factor as needed
 
-                # Calculate text dimensions for the maximum font size
+                # Keep reducing font size until the text fits within the bounding box
                 text_width, text_height = draw.textbbox((0, 0), data_value, font=text_font)[2:]
-
-                # Reduce font size if the text doesn't fit within the bounding box
                 while text_width > width or text_height > height:
-                    max_font_size -= 0.5
+                    max_font_size -= 2
                     text_font = ImageFont.truetype('George-SemiBold.ttf', size=max_font_size)
                     text_width, text_height = draw.textbbox((0, 0), data_value, font=text_font)[2:]
-
-                # Choose the final font size based on comparison with the input font size
-                final_font_size = min(font_size, max_font_size)
-
-                # Load font with the final font size
-                text_font = ImageFont.truetype('George-SemiBold.ttf', size=final_font_size)
 
                 # Calculate text position for centered placement
                 text_x = left + (width - text_width) / 2
