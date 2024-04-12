@@ -78,17 +78,22 @@ def generate_image(image, required_predictions, data, email_column_name="email")
                 font_size = round_to_nearest_common_font_size(font_size)
 
                 # Load font with dynamically calculated font size
-                text_font = ImageFont.truetype('Montesart.ttf', size=font_size)
+                text_font = ImageFont.truetype('George-SemiBold.ttf', size=font_size)
 
                 # Calculate maximum font size that fits within the bounding box
-                max_font_size = int(min(width, height) * 0.6)  # Adjust this factor as needed
+                max_font_size = int(min(width, height) * 1)  # Adjust this factor as needed
 
-                # Keep reducing font size until the text fits within the bounding box
+                # Calculate text dimensions for the current font size
                 text_width, text_height = draw.textbbox((0, 0), data_value, font=text_font)[2:]
-                while text_width > width or text_height > height:
-                    max_font_size -= 2
-                    text_font = ImageFont.truetype('Montesart.ttf', size=max_font_size)
-                    text_width, text_height = draw.textbbox((0, 0), data_value, font=text_font)[2:]
+
+                # Choose font size based on comparison between input and maximum font size
+                if font_size < max_font_size:
+                    final_font_size = font_size
+                else:
+                    final_font_size = max_font_size
+
+                # Load font with the chosen font size
+                text_font = ImageFont.truetype('George-SemiBold.ttf', size=final_font_size)
 
                 # Calculate text position for centered placement
                 text_x = left + (width - text_width) / 2
@@ -101,3 +106,4 @@ def generate_image(image, required_predictions, data, email_column_name="email")
         all_row_images.append(certificate_image)
 
     return all_row_images, email_list
+
