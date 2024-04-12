@@ -78,20 +78,25 @@ def generate_image(image, required_predictions, data, email_column_name="email")
                 font_size = round_to_nearest_common_font_size(font_size)
 
                 # Load font with dynamically calculated font size
-                text_font_size = 1
-                text_font = ImageFont.truetype('George-SemiBold.ttf', size=text_font_size)
+                text_font = ImageFont.truetype('George-SemiBold.ttf', size=font_size)
 
-                # Calculate text dimensions for the smallest font size
+                # Calculate maximum font size that fits within the bounding box
+                max_font_size = int(min(width, height) * 0.8)  # Adjust this factor as needed
+
+                # Calculate text dimensions for the maximum font size
                 text_width, text_height = draw.textbbox((0, 0), data_value, font=text_font)[2:]
 
-                # Calculate font size that fits within the bounding box
-                text_font_size = min(int(width / text_width * text_font_size), int(height / text_height * text_font_size))
+                # Reduce font size if the text doesn't fit within the bounding box
+                while text_width > width or text_height > height:
+                    max_font_size -= 1
+                    text_font = ImageFont.truetype('George-SemiBold.ttf', size=max_font_size)
+                    text_width, text_height = draw.textbbox((0, 0), data_value, font=text_font)[2:]
 
-                # Load font with the calculated font size
-                text_font = ImageFont.truetype('George-SemiBold.ttf', size=text_font_size)
+                # Choose the final font size based on comparison with the input font size
+                final_font_size = min(font_size, max_font_size)
 
-                # Calculate text dimensions for the final font size
-                text_width, text_height = draw.textbbox((0, 0), data_value, font=text_font)[2:]
+                # Load font with the final font size
+                text_font = ImageFont.truetype('George-SemiBold.ttf', size=final_font_size)
 
                 # Calculate text position for centered placement
                 text_x = left + (width - text_width) / 2
@@ -104,5 +109,3 @@ def generate_image(image, required_predictions, data, email_column_name="email")
         all_row_images.append(certificate_image)
 
     return all_row_images, email_list
-
-
