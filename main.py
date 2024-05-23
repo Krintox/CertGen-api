@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+import requests
 from flask_cors import CORS
 from PIL import Image
 from io import BytesIO
@@ -6,6 +7,7 @@ import base64
 import json
 from excel import read_excel
 from generate import generate_image
+from qr_generator import create_qr
 
 app = Flask(__name__)
 CORS(app)
@@ -43,6 +45,7 @@ def api():
     image_file = request.files['image']
     excel_file = request.files['excel']
     coordinates = json.loads(request.form['coordinates'])
+    qr_coordinates = json.loads(request.form['qrCoordinates'])
 
     try:
         # Convert image file to PIL Image object
@@ -58,10 +61,18 @@ def api():
             img.save(buffered, format="PNG")
             result_images_base64.append(base64.b64encode(buffered.getvalue()).decode())
 
-        return jsonify({"result_images": result_images_base64, "result_emails": result_emails})
+        response = requests.post("http://localhost:3000/generated_images", 
+                      json={"images": result_images_base64})
+        
+        links = response.json()['links']
+
+        qr_images = create_qr(result_images_base64, qr_coordinates, links)
+
+        return jsonify({"result_images": qr_images, "result_emails": result_emails})
     except Exception as e:
         # Log and handle errors
         return jsonify({"message": f"Error: {str(e)}"}), 500
+    
 
 @app.route('/')
 def index():
