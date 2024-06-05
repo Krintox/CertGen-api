@@ -5,3 +5,6 @@ Flask
 Flask-Cors
 waitress
 uvicorn
+opencv-python
+qrcode
+openpyxl
